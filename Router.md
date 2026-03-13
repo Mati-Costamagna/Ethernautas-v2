@@ -1,10 +1,27 @@
-### LAN Default Gateway
-- MAC Address: AA:44:43
-- IP: 10.6.0.1
-- Subnet Mask: 255.255.0.0
+## Identidad de red (Router / Default Gateway)
 
-### Concentrador
-- MAC Address: AA:43:80
+| Campo | Valor |
+|---|---|
+| Rol | Router (Default Gateway de la LAN) |
+| LAN | 10.6.0.0/16 |
+
+## Interfaces
+
+| Interfaz | Red | IP | Mascara | MAC | Conectado a |
+|---|---|---|---|---|---|
+| LAN | 10.6.0.0/16 | 10.6.0.1 | 255.255.0.0 | AA:44:43 | Hosts 2/3/4 |
+| WAN | 10.8.0.0/16 | 10.8.0.2 | 255.255.0.0 | AA:44:43 | Next hop 10.8.0.1 (MAC AA:43:80) |
+
+## Tabla de ruteo (L3)
+
+| Red destino | Next hop | Interfaz de salida |
+|---|---|---|
+| 10.6.0.0/16 | Directamente conectada | LAN |
+| 10.8.0.0/16 | Directamente conectada | WAN |
+| 10.2.0.0/16 | 10.8.0.1 | WAN |
+| 10.4.0.0/16 | 10.8.0.1 | WAN |
+| 10.12.0.0/16 | 10.8.0.1 | WAN |
+| 0.0.0.0/0 | 10.8.0.1 | WAN |
 
 ---
 
