@@ -28,4 +28,4 @@
 | Payload (Hex) | B544 |
 | Payload (Binario) | 1011010101000100 |
 
-## Paquetes recibidos (documentacion)
+## Paquetes recibidos

@@ -28,5 +28,7 @@
 | Payload (Hex) | 1F79 |
 | Payload (Binario) | 0001111101111001 |
 
-## Paquetes recibidos (documentacion)
+## Paquetes recibidos
+
+Sin paquetes recibidos
 

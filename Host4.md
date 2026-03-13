@@ -29,5 +29,3 @@
 | Payload (Binario) | 1111011111110111 |
 
 ## Paquetes recibidos
-
-TBD
