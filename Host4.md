@@ -43,6 +43,6 @@
 |---|---|
 | IP origen | 10.6.0.102 |
 | IP destino | 10.6.0.104 |
-| TTL | 4 |
+| TTL | 5 |
 | Payload (Hex) | 773C |
 | Payload (Binario) | 0111011100111100 |

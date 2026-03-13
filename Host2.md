@@ -23,7 +23,7 @@
 | Campo | Valor |
 |---|---|
 | IP origen | 10.6.0.102 |
-| IP destino (DST1) | 10.12.0.101 |
+| IP destino (DST1) | 10.6.0.104 |
 | TTL | 6 |
 | Payload (Hex) | B544 |
 | Payload (Binario) | 1011010101000100 |
@@ -43,6 +43,6 @@
 |---|---|
 | IP origen | 10.9.0.101 |
 | IP destino | 10.6.0.102 |
-| TTL | 2 |
+| TTL | 3 |
 | Payload (Hex) | EDB2 |
 | Payload (Binario) | 1110110110110010 |
