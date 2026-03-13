@@ -29,3 +29,20 @@
 | Payload (Binario) | 1111011111110111 |
 
 ## Paquetes recibidos
+
+## Frame Ethernet
+
+| Campo | Valor |
+|---|---|
+| MAC destino | AB:44:86 |
+| MAC origen | AA:44:43 |
+
+## Paquete IP
+
+| Campo | Valor |
+|---|---|
+| IP origen | 10.6.0.102 |
+| IP destino | 10.6.0.104 |
+| TTL | 4 |
+| Payload (Hex) | 773C |
+| Payload (Binario) | 0111011100111100 |
