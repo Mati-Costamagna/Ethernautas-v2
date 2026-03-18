@@ -11,7 +11,7 @@
 1) Las configuraciones realizadas por los integrantes se encuentran en los archivos `Parte_1/Host2.md`, `Parte_1/Host3.md`, `Parte_1/Host4.md`, `Parte_1/Router.md`.
 Cada uno de estos archivos contiene las tarjetas NIC correspondientes y los paquetes que hayan sido enviados/recibidos por cada dispositivo de nuestra LAN.
 
-2) La topologia de la red WAN contiene las direcciones de nuestra red LAN obtenidas a partir del protocolo ARP (tabla en `Parte_1/Routing_Table.md`)![Texto Alternativo](./Parte_1/topologia_red_bidireccional.svg)
+2) La topologia de la red WAN contiene las direcciones de nuestra red LAN obtenidas a partir del protocolo ARP (tabla en `Parte_1/Routing_Table.md`)![Texto Alternativo](./Parte_1/Topologia.png)
 
 
 5)
