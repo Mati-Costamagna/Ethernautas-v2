@@ -72,12 +72,12 @@ Alemania actúa como un nodo intermedio operando hasta la Capa 2 para enrutar/tr
     - Ocultación de información: El aislamiento estricto impide que capas superiores usen información valiosa de capas inferiores para optimizar el rendimiento.
 
 **2.4. El problema de los dos ejércitos azules**
-* Deteccion de errores.
+
     Respuesta: Matemáticamente, no existe ningún protocolo que pueda garantizar el éxito al 100% utilizando un canal no fiable. Si un general envía un mensaje, necesita confirmación. Si el otro envía la confirmación, ahora él necesita una confirmación de que su confirmación llegó, creando un bucle infinito de incertidumbre. En la práctica (como en TCP), no se busca la certeza matemática absoluta, sino una probabilidad de éxito suficientemente alta utilizando temporizadores y retransmisiones.
 
 **2.5. ¿Es necesaria o no una capa de red en una red de difusión?**
 
-    En una red de difusión pura y aislada (como una LAN local en bus donde todos los equipos "se escuchan" directamente), la capa de red no es estrictamente necesaria. La subcapa MAC (Capa 2) ya se encarga de direccionar físicamente las tramas al destinatario correcto dentro de ese medio compartido. Sin embargo, la capa de red se vuelve imprescindible tan pronto como se necesite interconectar esa LAN con otras redes diferentes (como Internet), ya que proporciona el enrutamiento lógico jerárquico.
+    En una red de difusión pura y aislada (como una LAN local en bus donde todos los equipos "se escuchan" directamente), la capa de red no es estrictamente necesaria. La subcapa MAC (Capa 2) ya se encarga de direccionar físicamente las tramas al destinatario correcto dentro de ese medio compartido. Sin embargo, la capa de red se vuelve imprescindible tan pronto como se necesite interconectar esa LAN con otras redes diferentes (como Internet), ya que proporciona el enrutamiento lógico.
 
 **2.6. Diseño de arquitecturas basadas en los principios de la Tabla 2.1**
 
