@@ -1,4 +1,6 @@
-# TP N1
+# Trabajo Práctico N°1
+
+## Equipo: Ethernauthas v2
 
 ### Integrantes
 - Costamagna, Matias Javier
@@ -7,6 +9,8 @@
 - Sabena, Maria Pilar
 
 ---
+
+## Parte 1: Repaso general didáctico: Simulación de envío de paquetes, ARP y ruteo entre redes.
 
 1) Las configuraciones realizadas por los integrantes se encuentran en los archivos `Parte_1/Host2.md`, `Parte_1/Host3.md`, `Parte_1/Host4.md`, `Parte_1/Router.md`.
 Cada uno de estos archivos contiene las tarjetas NIC correspondientes y los paquetes que hayan sido enviados/recibidos por cada dispositivo de nuestra LAN.
@@ -27,3 +31,5 @@ El gateway resuelve el impedimento de que el host está limitado a su segmento l
 Al distribuir la decisión de encaminamiento entre todos los nodos, se elimina también el punto único de fallo que tendría un esquema centralizado. Si un enlace o router falla, los nodos vecinos detectan el cambio y redirigen el tráfico por rutas alternativas, sin intervención del host origen. El mismo mecanismo permite adaptarse a la congestión: los routers ajustan sus decisiones según las condiciones actuales de la red.
 - d) El frame Ethernet contiene direcciones MAC que solo tienen sentido dentro de un mismo segmento de red, el frame ya cumplio su funcion de transporte dentro de la red asi que el router lo descarta y arma uno nuevo con las MACs correctas para el siguiente enlance. Si en cambio el router reenviara el mismo frame sin modificarlo, el siguiente dispositivo recibira un frame con una MAC destino que no le corresponde y lo descartaria.
 - e) El TTL previene que los paquetes queden circulando indefinidamente en la red sin alcanzar nignun host, como esto le puede pasar a muchos paquetes a la vez, los enlaces y routers se podrian saturar procesando tráfico inútil hasta colapsar.
+
+## Parte 2: Inyección y detección de errores.
