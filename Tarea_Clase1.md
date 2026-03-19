@@ -36,7 +36,7 @@ Basado en *Comunicaciones y Redes de Computadores* (7ª edición) de William Sta
 
 **2.7. ¿Qué ventajas aporta una arquitectura en capas como la usada en TCP/IP?**
 
-    * Modularidad e independencia: Los cambios en la tecnología de una capa específica no requieren reescribir el software de las demás capas, siempre y cuando se mantengan las interfaces.
+    * Modularidad e independencia: Los cambios en la tecnología de una capa específica no requieren reescribir el software de las demás, ya que cada capa solo conoce la interfaz que le ofrece la inferior, sin necesidad de conocer sus detalles internos. Esto simplifica tanto el diseño como el mantenimiento del sistema.
     * Facilidad de diseño e implementación: Reduce la complejidad del desarrollo, ya que los ingenieros pueden enfocarse en una sola capa a la vez.
     * Estandarización: Facilita la interoperabilidad entre fabricantes distintos.
 
