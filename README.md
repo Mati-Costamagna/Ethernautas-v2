@@ -1,6 +1,6 @@
 # Ethernautas-v2
 
-### Desarrollo de los TTPP del curso de Redes de Computadoras.
+### Desarrollo de las tareas de las clases teoricas del curso de Redes de Computadoras.
 ---
 ### Integrantes
 ## - Costamagna, Matias Javier
