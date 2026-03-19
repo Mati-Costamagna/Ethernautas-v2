@@ -58,11 +58,11 @@ Basado en *Comunicaciones y Redes de Computadores* (7ª edición) de William Sta
 **2.2. Diagramas de comunicación con traductores**
 
 **a) Primeros Ministros con traductores al inglés**
-![Diagrama 2.2.a)](./Diagramas/diagrama-a.svg)
+![Diagrama 2.2.a)](./Diagramas/diagrama-a.png)
 
 b) Inclusión de un traductor intermedio en Alemania (Nudo de Red / Router)
 Alemania actúa como un nodo intermedio operando hasta la Capa 2 para enrutar/traducir y volver a bajar a la Capa 1.
-![Diagrama 2.2.a)](./Diagramas/diagrama-b.svg)
+![Diagrama 2.2.a)](./Diagramas/diagrama-b.png)
 
 **2.3. Enumere las desventajas del diseño en capas para los protocolos.**
 
