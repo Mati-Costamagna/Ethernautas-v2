@@ -37,7 +37,7 @@ Al distribuir la decisión de encaminamiento entre todos los nodos, se elimina t
 # Parte 2 — Inyección y detección de errores (EDAC)
 
 Para realizar la actividad dividimos el aula en grupos de dos, donde cada grupo actuaba como host emisor y receptor al mismo tiempo. Los routers intermedios (otros grupos) podían modificar uno o más bits de la payload antes de reenviarla, sin avisarle al receptor. La idea era que cada grupo implementara su propia técnica de detección de errores y pudiera determinar de forma independiente si el paquete llegó tal como fue enviado, o si alguien le metió mano en el camino.
----
+
 ### Técnica EDAC utilizada
 
 En nuestro caso usamos dos técnicas combinadas: **XOR al enviar** y **bit de paridad al recibir**.
@@ -104,7 +104,3 @@ Paridad calculada: `0011`. Coincide exactamente con el EDAC recibido (`0011`), a
 La combinación de XOR en el emisor y paridad en el receptor nos permitió verificar la integridad del paquete recibido. En este caso, el paquete de `10.0.5.0` llegó íntegro.
 
 Vale aclarar que estas técnicas son solo de **detección**, no de corrección: podemos saber que algo fue modificado, pero no recuperar la información original. Además, hay casos donde dos errores se cancelan entre sí y no los detectamos, que es una limitación conocida de estos métodos.
-
-
-
-
