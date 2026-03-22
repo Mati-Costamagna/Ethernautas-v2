@@ -81,7 +81,7 @@ Alemania actúa como un nodo intermedio operando hasta la Capa 2 para enrutar/tr
 
 **2.6. Diseño de arquitecturas basadas en los principios de la Tabla 2.1**
 
-    a) Arquitectura de 8 capas: Se podría añadir una "Capa de Seguridad de Datos" entre la Presentación y la Aplicación. Por ejemplo una red bancaria, donde esta capa se encarga del cifrado asimétrico y la firma digital antes de que la aplicación procese los montos. En este ejemplo se constituyen funciones diferentes a las de ambas capas adyacentes (principio 3), y permiten ser rediseñadas de forma independiente ante nuevas amenazas (principio 6). 
+    a) Arquitectura  de 8 capas: Se podría añadir una "Capa de Seguridad de Datos" entre la Presentación y la Aplicación. Por ejemplo una red bancaria, donde esta capa se encarga del cifrado asimétrico y la firma digital antes de que la aplicación procese los montos. En este ejemplo se constituyen funciones diferentes a las de ambas capas adyacentes (principio 3), y permiten ser rediseñadas de forma independiente ante nuevas amenazas (principio 6). 
 
     b) Arquitectura de 6 capas: Se podrían fusionar la Capa de Sesión y la Capa de Presentación en una sola "Capa de Diálogo y Formato", ya que en ciertos entornos sus funciones están tan acopladas que separarlas añade complejidad sin beneficio real (principio 1), agrupando asi funciones similares en una misma capa (principio 4). Ejemplo: Redes de sensores IoT o streaming de video, donde el control de la sesión y la codificación de datos están tan entrelazados que separarlos sólo añade sobrecarga innecesaria.
 
