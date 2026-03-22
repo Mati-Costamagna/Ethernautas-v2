@@ -29,26 +29,28 @@ El gateway resuelve el impedimento de que el host está limitado a su segmento l
 - c)  La principal ventaja del modelo hop-by-hop es que cada router solo necesita conocer el siguiente salto hacia el destino, no el camino completo. Esto lo hace escalable: agregar nuevos nodos o redes no requiere que todos los routers actualicen una visión global de la topología.
 Al distribuir la decisión de encaminamiento entre todos los nodos, se elimina también el punto único de fallo que tendría un esquema centralizado. Si un enlace o router falla, los nodos vecinos detectan el cambio y redirigen el tráfico por rutas alternativas, sin intervención del host origen. El mismo mecanismo permite adaptarse a la congestión: los routers ajustan sus decisiones según las condiciones actuales de la red.
 
-- d) El frame Ethernet contiene direcciones MAC que solo tienen sentido dentro de un mismo segmento de red, el frame ya cumplio su funcion de transporte dentro de la red asi que el router lo descarta y arma uno nuevo con las MACs correctas para el siguiente enlance. Si en cambio el router reenviara el mismo frame sin modificarlo, el siguiente dispositivo recibira un frame con una MAC destino que no le corresponde y lo descartaria.
+- d) El frame Ethernet contiene direcciones MAC que solo tienen sentido dentro de un mismo segmento de red, el frame ya cumplio su funcion de transporte dentro de la red asi que el router lo descarta y arma uno nuevo con las MACs correctas para el siguiente enlace. Si en cambio el router reenviara el mismo frame sin modificarlo, el siguiente dispositivo recibira un frame con una MAC destino que no le corresponde y lo descartaria.
 
-- e) El TTL previene que los paquetes queden circulando indefinidamente en la red sin alcanzar nignun host, como esto le puede pasar a muchos paquetes a la vez, los enlaces y routers se podrian saturar procesando tráfico inútil hasta colapsar.
+- e) El TTL previene que los paquetes queden circulando indefinidamente en la red sin alcanzar ningún host, como esto le puede pasar a muchos paquetes a la vez, los enlaces y routers se podrian saturar procesando tráfico inútil hasta colapsar.
 
 ---
 # Parte 2 — Inyección y detección de errores (EDAC)
 
-Para realizar la actividad dividimos el aula en grupos de dos, donde cada grupo actuaba como host emisor y receptor al mismo tiempo. Los routers intermedios (otros grupos) podían modificar uno o más bits de la payload antes de reenviarla, sin avisarle al receptor. La idea era que cada grupo implementara su propia técnica de detección de errores y pudiera determinar de forma independiente si el paquete llegó tal como fue enviado, o si alguien le metió mano en el camino.
+Para realizar la actividad dividimos el aula en grupos de dos, donde cada grupo actuaba como host emisor y receptor al mismo tiempo. El router intermedio (profesor) podía modificar uno o más bits de la payload antes de reenviarla. La idea fue que cada grupo implementara una técnica de codificación para detección de errores y pudiera determinar de forma independiente si el paquete llegó tal como fue enviado, o si alguien le metió mano en el camino.
 
-### Técnica EDAC utilizada
+### Técnicas de detección utilizadas
 
-En nuestro caso usamos dos técnicas combinadas: **XOR al enviar** y **bit de paridad al recibir**.
+En nuestro caso usamos dos técnicas, una para generar el checksum al enviar y otra para verificarlo al recibir. Cabe notar que ambas son matemáticamente equivalentes (contar 1s módulo 2 es lo mismo que XOR), pero las describimos por separado para ilustrar las dos perspectivas:
+- **XOR por nibbles** en la transmisión (para generar el checksum)
+- **Bit de paridad por nibble** en la recepción (para verificar el checksum)
 
 ---
 
 ### Al enviar — XOR por nibbles
 
-Tomamos la payload de 16 bits, la dividimos en 4 grupos de 4 bits (nibbles) y les aplicamos XOR de forma sucesiva. El resultado es un checksum de 4 bits que mandamos junto con el paquete para que el receptor pueda verificarlo.
+Tomamos la payload de 16 bits, la dividimos en 4 nibbles y les aplicamos XOR de forma sucesiva. El resultado es un nibble que funciona como checksum, el cual se envía junto con el paquete para que el receptor pueda verificarlo.
 
-El XOR funciona así: dos bits iguales dan 0, dos bits distintos dan 1.
+El XOR es una operación booleana la cual da como resultado un 0 si los operandos son iguales, y un 1 si los operandos son distintos.
 
 ### Al recibir — Bit de paridad por nibble
 
@@ -56,37 +58,37 @@ Al recibir un paquete, calculamos el bit de paridad de cada nibble de la payload
 - Si la cantidad de `1`s en ese nibble es **par** → paridad `0`
 - Si la cantidad de `1`s en ese nibble es **impar** → paridad `1`
 
-Eso nos da 4 bits que comparamos con el EDAC que vino en el paquete. Si coinciden, el paquete está bien. Si no, alguien lo tocó.
+Eso nos da un nibble de verificación que se compara con el checksum que vino en el paquete. Si coinciden, el paquete está bien. Si no, alguien lo intervino.
 
 ---
 
 ## Paquetes
 
-### Paquete 1 / Enviado
+### Paquete 1 / Enviado (a grupo de 10.0.4.0)
 
 - **IP origen:** 10.0.2.0
 - **IP destino:** 10.0.4.0
 - **Payload:** e420 | `1110 0100 0010 0000`
-- **EDAC:** 8 | `1000`
+- **Checksum:** 8 | `1000`
 
-El EDAC lo calculamos hsiaciendo XOR entre los cuatro nibbles de la payload:
+El checksum lo calculamos aplicando XOR entre los cuatro nibbles de la payload:
 
 ```
 1110 XOR 0100 = 1010
 1010 XOR 0010 = 1000
-1000 XOR 0000 = 1000  ←  EDAC final
+1000 XOR 0000 = 1000  ←  checksum final
 ```
 
 Ese `1000` (hex `8`) lo mandamos junto al paquete para que el receptor pudiera verificarlo.
 
 ---
 
-### Paquete 2 / Recibido
+### Paquete 2 / Recibido (del grupo de 10.0.5.0)
 
 - **IP origen:** 10.0.5.0
 - **IP destino:** 10.0.2.0
 - **Payload:** a9b1 | `1010 1001 1011 0001`
-- **EDAC:** 3 | `0011`
+- **Checksum recibido:** 3 | `0011`
 - **Paquete no corrupto**
 
 Para verificar, calculamos el bit de paridad de cada nibble de la payload recibida:
@@ -96,11 +98,13 @@ Para verificar, calculamos el bit de paridad de cada nibble de la payload recibi
 - `1011` → tres `1`s → impar → `1`
 - `0001` → un `1` → impar → `1`
 
-Paridad calculada: `0011`. Coincide exactamente con el EDAC recibido (`0011`), así que el paquete llegó sin modificaciones.
+Paridad calculada: `0011`. Coincide exactamente con el checksum recibido (`0011`), así que el paquete llegó sin modificaciones.
 
 ---
 ## Conclusión
 
 La combinación de XOR en el emisor y paridad en el receptor nos permitió verificar la integridad del paquete recibido. En este caso, el paquete de `10.0.5.0` llegó íntegro.
 
-Vale aclarar que estas técnicas son solo de **detección**, no de corrección: podemos saber que algo fue modificado, pero no recuperar la información original. Además, hay casos donde dos errores se cancelan entre sí y no los detectamos, que es una limitación conocida de estos métodos.
+Vale aclarar que estas técnicas son solo de **detección**, no de corrección: podemos saber que algo fue modificado, pero no recuperar la información original. Además, cualquier cantidad par de bit-flips dentro de un mismo nibble pasa inadvertida, ya que los errores se cancelan entre sí y la paridad resultante no cambia. Esta es una limitación conocida de estos métodos.
+
+Por ejemplo, si el checksum recibido no hubiera coincidido con la paridad calculada, sabríamos que hubo corrupción, pero no podríamos determinar cuál bit fue alterado. Asumiendo un único bit-flip en la payload, habría 4 nibbles candidatos donde pudo ocurrir el error, sin forma de distinguir entre ellos.
