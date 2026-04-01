@@ -4,7 +4,7 @@
 ## Parte 1: Armado y verificación de cables Cat5/Cat5e (T568B Derecho)
 
 ### Construcción del cable
-
+ó
 Armamos un cable UTP Cat5e bajo la norma **T568B**, del tipo **derecho (no cruzado)**, de aproximadamente 1 metro de longitud. El orden de los conductores fue:
 
 | Pin | Color         |
