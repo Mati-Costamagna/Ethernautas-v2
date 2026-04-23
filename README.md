@@ -92,36 +92,55 @@ Se configuró Wireshark para capturar el tráfico hacia la IP de la VM y se inic
 *¿Se puede descifrar el contenido?*
 No. Como se observa en la captura, todos los paquetes SSH aparecen como Encrypted packet. SSH establece un canal cifrado desde el inicio de la sesión , por lo que todo el contenido viaja cifrado. Wireshark puede ver que existe tráfico entre los hosts, pero no puede revelar su contenido.
 ## Consigna 4
-a) Servidor TCP con netcat
-Se montó un servidor TCP en la VM escuchando en un puerto habilitado:
-` En la VM (servidor) 
-ncat -l <puerto> `
 
-Se configuró Wireshark con el filtro ip.dst == <VM_IP> and !ssh para capturar únicamente el tráfico TCP no SSH.
+### a) Servidor TCP con netcat
+
+Se montó un servidor TCP en la VM escuchando en un puerto habilitado:
+
+```bash
+# En la VM (servidor)
+ncat -l <puerto>
+```
+
+Se configuró Wireshark con el filtro `ip.dst == <VM_IP> and !ssh` para capturar únicamente el tráfico TCP no SSH.
+
 Desde la computadora local se conectó al servidor:
 
-``` En la PC local (cliente)
-ncat <VM_IP> <PUERTO> ```
+```bash
+# En la PC local (cliente)
+ncat <VM_IP> <PUERTO>
+```
 
-[Handshake TCP capturado en Wireshark]
+ [ TCP capturado en Wireshark]
 
 Una vez establecida la conexión, se enviaron mensajes entre ambos extremos:
 
-[acá foto de los mensajes enviados]
+ [mensajes enviados]
 
-b) Servidor UDP con netcat
-Se repitió el procedimiento anterior pero usando el protocolo UDP. Para enviar tráfico UDP con netcat se utiliza el flag -u:
-``` En la VM (servidor)
-ncat -u -l <puerto> ```
+### b) Servidor UDP con netcat
 
-``` En la PC local (cliente)
-ncat -u <VM_IP> <PUERTO> ```
+```bash
+# En la VM (servidor)
+ncat -u -l <puerto>
+```
+
+```bash
+# En la PC local (cliente)
+ncat -u <VM_IP> <PUERTO>
+```
 
 ## Consigna 5
-Servidor HTTP con Python
-Dentro de la carpeta del grupo creada en la consigna 2, se creó un archivo index.html.
-Se levantó un servidor HTTP simple con Python:
-``` python3 -m http.server 8000 ```
-Desde el navegador de la PC local se accedió a http://<VM_IP>:8000 y se verificó el acceso:
 
-[fotuli index.html servido desde la VM]
+### Servidor HTTP con Python
+
+Dentro de la carpeta del grupo creada en la consigna 2, se creó un archivo `index.html`.
+
+Se levantó un servidor HTTP simple con Python:
+
+```bash
+python3 -m http.server 8000
+```
+
+Desde el navegador de la PC local se accedió a `http://<VM_IP>:8000` y se verificó el acceso:
+
+[foto del index.html servido desde la VM]
