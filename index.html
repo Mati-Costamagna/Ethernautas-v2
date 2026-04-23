@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ethernautas v2 — TP3</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0b0f0e;
+      --surface: #111916;
+      --border: rgba(0,220,110,0.15);
+      --green: #00dc6e;
+      --green-dim: #007a3d;
+      --green-faint: rgba(0,220,110,0.06);
+      --amber: #f5a623;
+      --text: #c8f0da;
+      --muted: #5a8a6a;
+      --mono: 'Courier New', 'Lucida Console', monospace;
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 20px 60px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        180deg,
+        transparent 0px, transparent 3px,
+        rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 4px
+      );
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .topbar {
+      width: 100%;
+      max-width: 740px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 0 14px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+    }
+    .dot { color: var(--green); animation: blink 1.2s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .hero {
+      width: 100%;
+      max-width: 740px;
+      margin: 52px 0 44px;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .eyebrow {
+      font-size: 0.68rem;
+      letter-spacing: 0.28em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: clamp(2.6rem, 8vw, 5.2rem);
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      font-family: var(--mono);
+      color: var(--green);
+      text-shadow: 0 0 40px rgba(0,220,110,0.35);
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--amber);
+      text-shadow: 0 0 30px rgba(245,166,35,0.4);
+    }
+
+    .tagline {
+      margin-top: 22px;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 500px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 740px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 28px;
+      overflow: hidden;
+      animation: fadeUp 0.7s 0.15s ease both;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0,220,110,0.03);
+    }
+    .card-header span {
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-left: 4px;
+    }
+    .wd { width: 10px; height: 10px; border-radius: 50%; }
+    .wr { background: #ff5f57; }
+    .wy { background: #febc2e; }
+    .wg { background: #28c840; }
+
+    .card-body { padding: 20px 24px 24px; }
+
+    .line {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      font-size: 0.83rem;
+      line-height: 2;
+    }
+    .ps  { color: var(--green); flex-shrink: 0; }
+    .cmd { color: #e0ffe8; }
+    .arg { color: var(--amber); }
+    .out { color: var(--muted); padding-left: 20px; font-size: 0.78rem; }
+    .cursor { color: var(--green); animation: blink 1s step-end infinite; }
+
+    .section-label {
+      font-size: 0.62rem;
+      letter-spacing: 0.3em;
+      color: var(--green-dim);
+      text-transform: uppercase;
+      width: 100%;
+      max-width: 740px;
+      margin-bottom: 12px;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+
+    table {
+      width: 100%;
+      max-width: 740px;
+      border-collapse: collapse;
+      font-size: 0.76rem;
+      margin-bottom: 28px;
+      animation: fadeUp 0.7s 0.35s ease both;
+    }
+    thead tr { border-bottom: 1px solid var(--border); }
+    th {
+      padding: 8px 12px;
+      text-align: left;
+      color: var(--green-dim);
+      letter-spacing: 0.1em;
+      font-size: 0.65rem;
+      font-weight: normal;
+      text-transform: uppercase;
+    }
+    td {
+      padding: 9px 12px;
+      border-bottom: 1px solid rgba(0,220,110,0.05);
+      color: var(--text);
+    }
+    tr:hover td { background: var(--green-faint); }
+    tr:last-child td { border-bottom: none; }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 3px;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+    }
+    .b-http { background: rgba(245,166,35,0.12); color: var(--amber);  border: 1px solid rgba(245,166,35,0.25); }
+    .b-tcp  { background: rgba(0,220,110,0.08);  color: var(--green);  border: 1px solid rgba(0,220,110,0.2); }
+    .b-ssh  { background: rgba(120,120,255,0.1); color: #a0a0ff;       border: 1px solid rgba(120,120,255,0.25); }
+    .b-udp  { background: rgba(255,90,90,0.08);  color: #ff9090;       border: 1px solid rgba(255,90,90,0.2); }
+
+    .enc-yes { color: var(--green); }
+    .enc-no  { color: #ff7070; }
+
+    footer {
+      width: 100%;
+      max-width: 740px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      animation: fadeUp 0.6s 0.5s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <span>FCEFyN &middot; UNC &middot; Redes de Computadoras &middot; TP3</span>
+    <span><span class="dot">&#9632;</span> LIVE &middot; <span id="clock">--:--:--</span></span>
+  </div>
+
+  <div class="hero">
+    <p class="eyebrow">// grupo ethernautas_v2 &middot; vm debian x64</p>
+    <h1>HOLA<br/><em>MUNDO</em></h1>
+    <p class="tagline">
+      Servidor HTTP en puerto <span style="color:var(--green)">8000</span>
+      via <span style="color:var(--amber)">python3 -m http.server</span>.
+      Trafico visible en Wireshark. Sin cifrado. Ese es el punto.
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="wd wr"></div>
+      <div class="wd wy"></div>
+      <div class="wd wg"></div>
+      <span>bash &middot; ethernautas_v2@vm &middot; ~/ethernautas_v2</span>
+    </div>
+    <div class="card-body">
+      <div class="line"><span class="ps">$</span><span class="cmd">ssh -i <span class="arg">clave.pem</span> alumno@<span class="arg">IP_VM</span></span></div>
+      <div class="line out">&#8594; conexion establecida &middot; cifrado AES-256-CTR</div>
+      <div class="line"><span class="ps">$</span><span class="cmd">mkdir <span class="arg">ethernautas_v2</span> &amp;&amp; cd <span class="arg">ethernautas_v2</span></span></div>
+      <div class="line"><span class="ps">$</span><span class="cmd">nano index.html</span></div>
+      <div class="line out">&#8594; archivo guardado</div>
+      <div class="line"><span class="ps">$</span><span class="cmd">python3 -m http.server <span class="arg">8000</span></span></div>
+      <div class="line out">Serving HTTP on 0.0.0.0 port <span style="color:var(--amber)">8000</span> ...</div>
+      <div class="line"><span class="ps">$</span><span class="cursor">_</span></div>
+    </div>
+  </div>
+
+  <p class="section-label">// trafico capturado &middot; wireshark &middot; ip.dst == IP_VM</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Proto</th>
+        <th>Origen</th>
+        <th>Destino</th>
+        <th>Info</th>
+        <th>Cifrado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td><span class="badge b-tcp">TCP</span></td>
+        <td>PC_LOCAL</td>
+        <td>VM:8000</td>
+        <td>SYN &mdash; three-way handshake</td>
+        <td class="enc-no">NO</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><span class="badge b-http">HTTP</span></td>
+        <td>PC_LOCAL</td>
+        <td>VM:8000</td>
+        <td>GET / HTTP/1.1</td>
+        <td class="enc-no">NO &mdash; texto plano</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><span class="badge b-http">HTTP</span></td>
+        <td>VM:8000</td>
+        <td>PC_LOCAL</td>
+        <td>200 OK &middot; index.html</td>
+        <td class="enc-no">NO &mdash; texto plano</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><span class="badge b-ssh">SSH</span></td>
+        <td>PC_LOCAL</td>
+        <td>VM:22</td>
+        <td>Encrypted packet (len=68)</td>
+        <td class="enc-yes">SI &check;</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><span class="badge b-udp">UDP</span></td>
+        <td>PC_LOCAL</td>
+        <td>VM:9001</td>
+        <td>ncat &middot; sin handshake</td>
+        <td class="enc-no">NO</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td><span class="badge b-tcp">TCP</span></td>
+        <td>VM:9000</td>
+        <td>VM2:9000</td>
+        <td>ncat chat VM&harr;VM</td>
+        <td class="enc-no">NO &mdash; legible</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer>
+    <span>ethernautas_v2 &middot; FCEFyN &middot; UNC &middot; 2025</span>
+    <span>HTTP &ne; HTTPS &middot; confidencialidad importa</span>
+    <span id="ts">--</span>
+  </footer>
+
+  <script>
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function tick() {
+      var d = new Date();
+      var t = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+      document.getElementById('clock').textContent = t;
+      document.getElementById('ts').textContent =
+        d.toLocaleDateString('es-AR') + ' \u00b7 ' + t;
+    }
+    tick();
+    setInterval(tick, 1000);
+  </script>
+
+</body>
+</html>
