@@ -73,3 +73,52 @@ Stallings señala que en los sistemas de clave pública, la seguridad del esquem
 | **Reutilización** | Muchos usuarios repiten contraseñas | Cada par de claves es único |
 
 La ventaja más importante desde el punto de vista de Stallings es que con claves SSH se implementa un esquema de **autenticación de desafío-respuesta** basado en criptografía asimétrica: el servidor envía un desafío cifrado con la clave pública del usuario, y solo quien posee la clave privada puede responderlo correctamente. Esto significa que **la información secreta nunca viaja por la red**, eliminando la posibilidad de capturarla mediante sniffing o ataques de repetición (*replay attacks*).
+## Consigna 2
+Para verificar la conexión SSH a la VM se utilizó el siguiente comando:
+``` ssh -i <path/a/la/clave> <usuario>@<ip> ``` 
+
+[Conexión SSH a la VM]
+
+Una vez conectados, se creó la carpeta del grupo dentro de la VM:
+``` mkdir Ethernautas``` 
+
+[Carpeta en la VM]
+## Consigna 3
+Se configuró Wireshark para capturar el tráfico hacia la IP de la VM y se inició una sesión SSH. El filtro utilizado fue:
+``` ip.dst == <VM_IP> ```
+
+[Paquetes SSH capturados]
+
+*¿Se puede descifrar el contenido?*
+No. Como se observa en la captura, todos los paquetes SSH aparecen como Encrypted packet. SSH establece un canal cifrado desde el inicio de la sesión , por lo que todo el contenido viaja cifrado. Wireshark puede ver que existe tráfico entre los hosts, pero no puede revelar su contenido.
+## Consigna 4
+a) Servidor TCP con netcat
+Se montó un servidor TCP en la VM escuchando en un puerto habilitado:
+``` En la VM (servidor) 
+ncat -l <puerto> ```
+Se configuró Wireshark con el filtro ip.dst == <VM_IP> and !ssh para capturar únicamente el tráfico TCP no SSH.
+Desde la computadora local se conectó al servidor:
+``` En la PC local (cliente)
+ncat <VM_IP> <PUERTO> ```
+
+[Handshake TCP capturado en Wireshark]
+
+Una vez establecida la conexión, se enviaron mensajes entre ambos extremos:
+
+[acá foto de los mensajes enviados]
+b) Servidor UDP con netcat
+Se repitió el procedimiento anterior pero usando el protocolo UDP. Para enviar tráfico UDP con netcat se utiliza el flag -u:
+``` En la VM (servidor)
+ncat -u -l <puerto> ``````
+
+```En la PC local (cliente)
+ncat -u <VM_IP> <PUERTO> ```
+
+## Consigna 5
+Servidor HTTP con Python
+Dentro de la carpeta del grupo creada en la consigna 2, se creó un archivo index.html.
+Se levantó un servidor HTTP simple con Python:
+``` python3 -m http.server 8000 ```
+Desde el navegador de la PC local se accedió a http://<VM_IP>:8000 y se verificó el acceso:
+
+[fotuli index.html servido desde la VM]
