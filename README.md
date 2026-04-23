@@ -96,8 +96,10 @@ a) Servidor TCP con netcat
 Se montó un servidor TCP en la VM escuchando en un puerto habilitado:
 ` En la VM (servidor) 
 ncat -l <puerto> `
+
 Se configuró Wireshark con el filtro ip.dst == <VM_IP> and !ssh para capturar únicamente el tráfico TCP no SSH.
 Desde la computadora local se conectó al servidor:
+
 ``` En la PC local (cliente)
 ncat <VM_IP> <PUERTO> ```
 
@@ -106,12 +108,13 @@ ncat <VM_IP> <PUERTO> ```
 Una vez establecida la conexión, se enviaron mensajes entre ambos extremos:
 
 [acá foto de los mensajes enviados]
+
 b) Servidor UDP con netcat
 Se repitió el procedimiento anterior pero usando el protocolo UDP. Para enviar tráfico UDP con netcat se utiliza el flag -u:
 ``` En la VM (servidor)
-ncat -u -l <puerto> ``````
+ncat -u -l <puerto> ```
 
-```En la PC local (cliente)
+``` En la PC local (cliente)
 ncat -u <VM_IP> <PUERTO> ```
 
 ## Consigna 5
