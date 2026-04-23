@@ -94,8 +94,8 @@ No. Como se observa en la captura, todos los paquetes SSH aparecen como Encrypte
 ## Consigna 4
 a) Servidor TCP con netcat
 Se montó un servidor TCP en la VM escuchando en un puerto habilitado:
-``` En la VM (servidor) 
-ncat -l <puerto> ```
+` En la VM (servidor) 
+ncat -l <puerto> `
 Se configuró Wireshark con el filtro ip.dst == <VM_IP> and !ssh para capturar únicamente el tráfico TCP no SSH.
 Desde la computadora local se conectó al servidor:
 ``` En la PC local (cliente)
