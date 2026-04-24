@@ -229,7 +229,7 @@
     <p class="eyebrow">// grupo ethernautas_v2 &middot; vm debian x64</p>
     <h1>HOLA<br/><em>MUNDO</em></h1>
     <p class="tagline">
-      Servidor HTTP en puerto <span style="color:var(--green)">8000</span>
+      Servidor HTTP en puerto <span style="color:var(--green)">5000</span>
       via <span style="color:var(--amber)">python3 -m http.server</span>.
       Trafico visible en Wireshark. Sin cifrado. Ese es el punto.
     </p>
@@ -248,8 +248,8 @@
       <div class="line"><span class="ps">$</span><span class="cmd">mkdir <span class="arg">ethernautas_v2</span> &amp;&amp; cd <span class="arg">ethernautas_v2</span></span></div>
       <div class="line"><span class="ps">$</span><span class="cmd">nano index.html</span></div>
       <div class="line out">&#8594; archivo guardado</div>
-      <div class="line"><span class="ps">$</span><span class="cmd">python3 -m http.server <span class="arg">8000</span></span></div>
-      <div class="line out">Serving HTTP on 0.0.0.0 port <span style="color:var(--amber)">8000</span> ...</div>
+      <div class="line"><span class="ps">$</span><span class="cmd">python3 -m http.server <span class="arg">5000</span></span></div>
+      <div class="line out">Serving HTTP on 0.0.0.0 port <span style="color:var(--amber)">5000</span> ...</div>
       <div class="line"><span class="ps">$</span><span class="cursor">_</span></div>
     </div>
   </div>
@@ -272,7 +272,7 @@
         <td>1</td>
         <td><span class="badge b-tcp">TCP</span></td>
         <td>PC_LOCAL</td>
-        <td>VM:8000</td>
+        <td>VM:5000</td>
         <td>SYN &mdash; three-way handshake</td>
         <td class="enc-no">NO</td>
       </tr>
@@ -280,14 +280,14 @@
         <td>2</td>
         <td><span class="badge b-http">HTTP</span></td>
         <td>PC_LOCAL</td>
-        <td>VM:8000</td>
+        <td>VM:5000</td>
         <td>GET / HTTP/1.1</td>
         <td class="enc-no">NO &mdash; texto plano</td>
       </tr>
       <tr>
         <td>3</td>
         <td><span class="badge b-http">HTTP</span></td>
-        <td>VM:8000</td>
+        <td>VM:5000</td>
         <td>PC_LOCAL</td>
         <td>200 OK &middot; index.html</td>
         <td class="enc-no">NO &mdash; texto plano</td>
@@ -320,7 +320,7 @@
   </table>
 
   <footer>
-    <span>ethernautas_v2 &middot; FCEFyN &middot; UNC &middot; 2025</span>
+    <span>ethernautas_v2 &middot; FCEFyN &middot; UNC &middot; 2026</span>
     <span>HTTP &ne; HTTPS &middot; confidencialidad importa</span>
     <span id="ts">--</span>
   </footer>

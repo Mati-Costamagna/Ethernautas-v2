@@ -174,7 +174,23 @@ ncat -u 4.206.219.90 5432
 
 ### c) Chat ncat entre dos VMs
 
-> **Pendiente**: abrir dos sesiones SSH simultáneas (una a pc3 en Azure y otra a pc4 en Google), levantar ncat en una como servidor y conectarse desde la otra, y documentar el intercambio de mensajes entre ambas instancias.
+Se estableció una comunicación bidireccional tipo chat entre las dos VMs del grupo (pc3 en Azure y pc4 en Google Cloud) usando ncat. Una VM actúa como servidor escuchando en un puerto, y la otra se conecta como cliente:
+
+```bash
+# En pc3 (servidor — Azure, 4.206.219.90)
+sudo ncat -l 5432
+
+# En pc4 (cliente — Google Cloud)
+ncat 4.206.219.90 5432
+```
+
+Una vez establecida la conexión, ambas VMs pueden enviarse mensajes de forma interactiva: lo que se escribe en una terminal aparece en la otra en tiempo real. La comunicación es **sin cifrado**: el contenido viaja en texto plano sobre TCP, exactamente igual que en el inciso a).
+
+La diferencia respecto a los incisos anteriores es que ahora **ambos extremos son servidores remotos**, lo que demuestra que ncat no requiere que uno de los extremos sea una máquina local. Cualquier par de hosts con conectividad IP entre sí puede establecer este canal.
+
+![Conexion TCP interceptada en servidor](./assests/pc4_tcp_between_vms.png)
+
+<video src="https://github.com/user-attachments/assets/b1091df9-49f7-4708-ab3c-acec6313227f" controls width="100%"></video>
 
 ---
 
@@ -193,15 +209,17 @@ El mismo procedimiento se realizó en ambas VMs. Desde el navegador se accedió 
 
 **VM pc3 (Azure — `4.206.219.90`):**
 
-![Página servida por HTTP desde pc3](assests/pc3_https_p1.jpeg)
+![Página servida por HTTP desde pc3 - vista Movil](assests/pc3_http_p1.png)
+
+![Página servida por HTTP desde pc3 - vista Web](assests/pc3_http_p2.png)
 
 **VM pc4 (Google — `34.148.193.117`):**
 
 ![Página servida por HTTP desde pc4](assests/pc4_http_p1.png)
 
-Se capturó el tráfico HTTP con Wireshark usando el filtro `ip.dst == 34.148.193.117 and !ssh`:
+Se capturó el tráfico HTTP con Wireshark usando el filtro `ip.dst == 4.206.219.90 and !ssh`:
 
-![Tráfico HTTP capturado en Wireshark](assests/pc4_http_wireshark.png)
+![Tráfico HTTP capturado en Wireshark](assests/pc3_http_wireshark.png)
 
 **¿Se puede descifrar el contenido HTTP?**
 
@@ -210,9 +228,3 @@ Sí. HTTP transmite todo en **texto plano**. En Wireshark se puede ver íntegram
 **¿Se podría intervenir el contenido?**
 
 Sí. Al tratarse de HTTP sin TLS, cualquier nodo intermedio en la ruta de red (router, ISP, atacante en la misma red) podría realizar un ataque **Man-in-the-Middle (MitM)**: interceptar la respuesta del servidor y modificar el HTML antes de que llegue al cliente, sin que ninguna de las partes lo detecte. Esto es precisamente el problema que resuelve HTTPS: al cifrar el canal con TLS, cualquier modificación en tránsito invalida la firma del certificado y el cliente rechaza la conexión.
-
----
-
-## Consigna 6
-
-> **Pendiente**: ver el video de Veritasium y responder los puntos a) y b).
