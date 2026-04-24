@@ -73,74 +73,146 @@ Stallings señala que en los sistemas de clave pública, la seguridad del esquem
 | **Reutilización** | Muchos usuarios repiten contraseñas | Cada par de claves es único |
 
 La ventaja más importante desde el punto de vista de Stallings es que con claves SSH se implementa un esquema de **autenticación de desafío-respuesta** basado en criptografía asimétrica: el servidor envía un desafío cifrado con la clave pública del usuario, y solo quien posee la clave privada puede responderlo correctamente. Esto significa que **la información secreta nunca viaja por la red**, eliminando la posibilidad de capturarla mediante sniffing o ataques de repetición (*replay attacks*).
-## Consigna 2
-Para verificar la conexión SSH a la VM se utilizó el siguiente comando:
-``` ssh -i <path/a/la/clave> <usuario>@<ip> ``` 
 
-[Conexión SSH a la VM]
+---
+
+## Consigna 2
+
+### Verificación de conexión SSH a la VM
+
+Para verificar la conexión SSH a la VM se utilizó el siguiente comando:
+
+```bash
+ssh -i ./pc3_key.pem pc-alumnos-3@4.206.219.90
+```
+
+![Conexión SSH y creación de carpeta](assests/pc3_connection.png)
 
 Una vez conectados, se creó la carpeta del grupo dentro de la VM:
-``` mkdir Ethernautas``` 
 
-[Carpeta en la VM]
+```bash
+mkdir ethernautas_v2
+```
+
+La captura muestra la conexión exitosa al sistema Debian GNU/Linux (kernel 6.1.0-44-cloud-amd64) y la carpeta `ethernautas_v2` creada correctamente.
+
+---
+
 ## Consigna 3
+
+### Captura de tráfico SSH con Wireshark
+
 Se configuró Wireshark para capturar el tráfico hacia la IP de la VM y se inició una sesión SSH. El filtro utilizado fue:
-``` ip.dst == <VM_IP> ```
 
-[Paquetes SSH capturados]
+```
+ip.dst == 4.206.219.90
+```
 
-*¿Se puede descifrar el contenido?*
-No. Como se observa en la captura, todos los paquetes SSH aparecen como Encrypted packet. SSH establece un canal cifrado desde el inicio de la sesión , por lo que todo el contenido viaja cifrado. Wireshark puede ver que existe tráfico entre los hosts, pero no puede revelar su contenido.
+![Paquetes SSH capturados en Wireshark](assests/pc3_ssh_package.png)
+
+**¿Se puede descifrar el contenido?**
+
+No. Como se observa en la captura, todos los paquetes SSH aparecen como `Client: Encrypted packet` o `Server: Encrypted packet`. SSH establece un canal cifrado (en este caso con AES-256-CTR) **antes** de transmitir cualquier dato de usuario. Wireshark puede ver los metadatos del paquete (IPs, puertos, longitudes) pero el payload es completamente ilegible sin la clave de sesión.
+
+**¿Es la clave `.pem` la que cifra este tráfico?**
+
+No. El par de claves pública/privada (el archivo `.pem`) cumple un rol exclusivo de **autenticación**: le demuestra al servidor que quien se conecta es el legítimo dueño de la clave privada. El cifrado del tráfico en sí se realiza con una clave de sesión distinta, generada durante el handshake. La clave pública viaja en ese proceso, pero la clave de sesión resultante nunca se transmite por la red, por lo que no puede capturarse con Wireshark.
+
+---
+
 ## Consigna 4
 
-### a) Servidor TCP con netcat
+### a) Servidor TCP con ncat
 
-Se montó un servidor TCP en la VM escuchando en un puerto habilitado:
-
-```bash
-# En la VM (servidor)
-ncat -l <puerto>
-```
-
-Se configuró Wireshark con el filtro `ip.dst == <VM_IP> and !ssh` para capturar únicamente el tráfico TCP no SSH.
-
-Desde la computadora local se conectó al servidor:
-
-```bash
-# En la PC local (cliente)
-ncat <VM_IP> <PUERTO>
-```
-
- [ TCP capturado en Wireshark]
-
-Una vez establecida la conexión, se enviaron mensajes entre ambos extremos:
-
- [mensajes enviados]
-
-### b) Servidor UDP con netcat
+Se montó un servidor TCP en la VM escuchando en el puerto `5432`:
 
 ```bash
 # En la VM (servidor)
-ncat -u -l <puerto>
+sudo ncat -l 5432
+
+# En la PC local (cliente)
+ncat 4.206.219.90 5432
 ```
 
+Se configuró Wireshark con el filtro `ip.dst == 4.206.219.90 and !ssh` para capturar únicamente el tráfico TCP no SSH hacia la VM.
+
+**Three-way handshake y mensajes:**
+
+![Handshake TCP capturado en Wireshark](assests/pc3_handshake.png)
+
+![Tráfico TCP - parte 1](assests/pc3_tcp_p1.png)
+
+![Tráfico TCP - parte 2](assests/pc3_tcp_p2.png)
+
+La captura muestra el handshake completo (SYN → SYN-ACK → ACK) seguido del intercambio de mensajes entre la PC local y la VM. **El contenido es completamente legible en texto plano** tanto en la vista de paquetes como en el panel de bytes de Wireshark: no hay ningún tipo de cifrado en esta comunicación.
+
+---
+
+### b) Servidor UDP con ncat
+
+Se repitió el ejercicio usando protocolo UDP. ncat requiere el flag `-u` tanto en servidor como en cliente:
+
 ```bash
+# En la VM (servidor)
+sudo ncat -u -l 5432
+
 # En la PC local (cliente)
-ncat -u <VM_IP> <PUERTO>
+ncat -u 4.206.219.90 5432
 ```
+
+![Tráfico UDP capturado - parte 1](assests/pc3_udp_p1.png)
+
+![Tráfico UDP capturado - parte 2](assests/pc3_udp_p2.png)
+
+**Diferencias observadas respecto a TCP:**
+
+- UDP **no realiza handshake**: los datos se envían directamente sin establecer conexión previa. En la captura se observa que no hay paquetes SYN/SYN-ACK/ACK.
+- Los mensajes son igualmente **visibles en texto plano** en el análisis de bytes de Wireshark.
+- UDP es un protocolo *connectionless*: no garantiza entrega, orden ni detección de errores a nivel de transporte.
+
+---
+
+### c) Chat ncat entre dos VMs
+
+> **Pendiente**: abrir dos sesiones SSH simultáneas (una a pc3 en Azure y otra a pc4 en Google), levantar ncat en una como servidor y conectarse desde la otra, y documentar el intercambio de mensajes entre ambas instancias.
+
+---
 
 ## Consigna 5
 
 ### Servidor HTTP con Python
 
-Dentro de la carpeta del grupo creada en la consigna 2, se creó un archivo `index.html`.
-
-Se levantó un servidor HTTP simple con Python:
+Dentro de la carpeta del grupo en la VM, se creó el archivo `index.html` y se desplegó un servidor HTTP:
 
 ```bash
-python3 -m http.server 8000
+cd ethernautas_v2
+python3 -m http.server 5000
 ```
 
-Desde el navegador de la PC local se accedió a `http://<VM_IP>:8000` y se verificó el acceso:
+El mismo procedimiento se realizó en ambas VMs. Desde el navegador se accedió a cada una y se verificó el acceso:
 
-[foto del index.html servido desde la VM]
+**VM pc3 (Azure — `4.206.219.90`):**
+
+![Página servida por HTTP desde pc3](assests/pc3_https_p1.jpeg)
+
+**VM pc4 (Google — `34.148.193.117`):**
+
+![Página servida por HTTP desde pc4](assests/pc4_http_p1.png)
+
+Se capturó el tráfico HTTP con Wireshark usando el filtro `ip.dst == 34.148.193.117 and !ssh`:
+
+![Tráfico HTTP capturado en Wireshark](assests/pc4_http_wireshark.png)
+
+**¿Se puede descifrar el contenido HTTP?**
+
+Sí. HTTP transmite todo en **texto plano**. En Wireshark se puede ver íntegramente el request (`GET / HTTP/1.1`) y el response con el HTML completo del `index.html`. No hay cifrado de ningún tipo.
+
+**¿Se podría intervenir el contenido?**
+
+Sí. Al tratarse de HTTP sin TLS, cualquier nodo intermedio en la ruta de red (router, ISP, atacante en la misma red) podría realizar un ataque **Man-in-the-Middle (MitM)**: interceptar la respuesta del servidor y modificar el HTML antes de que llegue al cliente, sin que ninguna de las partes lo detecte. Esto es precisamente el problema que resuelve HTTPS: al cifrar el canal con TLS, cualquier modificación en tránsito invalida la firma del certificado y el cliente rechaza la conexión.
+
+---
+
+## Consigna 6
+
+> **Pendiente**: ver el video de Veritasium y responder los puntos a) y b).
