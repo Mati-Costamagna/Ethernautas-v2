@@ -121,9 +121,20 @@ El servidor recibe la payload completamente cifrada e ilegible. En la captura se
 ![Cliente cifrando y servidor recibiendo payload cifrada](assets/fernet.png)
  
 ### c) Características de Fernet
- 
-- **Tipo:** Cifrado simétrico — la misma clave cifra y descifra.
-- **Algoritmo subyacente:** AES-128 en modo CBC para el cifrado, con HMAC-SHA256 para verificar integridad.
-- **Formato de salida:** Base64 URL-safe, lo que lo hace directamente embebible en un JSON.
-- **Propiedad destacada:** Cada cifrado del mismo texto produce un resultado diferente (usa un IV aleatorio), por lo que no es posible detectar mensajes repetidos analizando el tráfico.
+
+**Fernet** es un esquema de cifrado autenticado de alto nivel provisto por la librería `cryptography` de Python. Internamente combina dos mecanismos:
+
+- **Cifrado simétrico (AES-128 en modo CBC):**
+  El cifrado *simétrico* significa que la misma clave secreta se usa tanto para cifrar como para descifrar. Ambas partes deben conocerla de antemano (en este TP la clave está hardcodeada en el cliente).
+  El algoritmo de cifrado es **AES** (*Advanced Encryption Standard*), el estándar de cifrado de bloque más utilizado hoy en día. La variante de 128 bits indica el tamaño de la clave. Opera en modo **CBC** (*Cipher Block Chaining*): el mensaje se divide en bloques y cada bloque se combina con el bloque cifrado anterior antes de cifrarse, de modo que bloques de texto iguales producen ciphertext diferente.
+
+- **IV (Vector de Inicialización):**
+  Para arrancar la cadena CBC, el primer bloque se combina con un valor inicial aleatorio llamado **IV** (*Initialization Vector*). Fernet genera un IV aleatorio en cada operación de cifrado, lo que garantiza que cifrar el mismo texto dos veces produce resultados completamente distintos. Esto impide que un atacante que analice el tráfico identifique mensajes repetidos.
+
+- **Integridad y autenticidad (HMAC-SHA256):**
+  El cifrado por sí solo no garantiza que el mensaje no fue alterado en tránsito. Por eso Fernet también firma el mensaje con **HMAC** (*Hash-based Message Authentication Code*): un código generado a partir de la clave y el contenido cifrado usando la función de hash **SHA-256**. Si un tercero modifica el ciphertext aunque sea en un bit, el receptor detecta la alteración y rechaza el mensaje. Esto significa que Fernet ofrece tanto *confidencialidad* (nadie puede leer el mensaje) como *autenticidad* (nadie puede modificarlo sin que se note).
+
+- **Formato de salida (Base64 URL-safe):**
+  El resultado del cifrado son bytes binarios. Para poder embeber ese resultado directamente en un JSON (que es texto), Fernet lo codifica en **Base64 URL-safe**: una representación textual de datos binarios que usa solo caracteres ASCII seguros para URLs (`A-Z`, `a-z`, `0-9`, `-`, `_`). Esto explica el aspecto del ciphertext que se observa en la captura.
+
 - **Librería:** `cryptography` (Python) — `pip install cryptography`.
