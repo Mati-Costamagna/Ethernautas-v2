@@ -94,3 +94,36 @@ Se ejecutaron servidor y cliente en paralelo en la misma máquina (`127.0.0.1:50
 
 ## Consigna 4
 
+Se implementó cifrado **Fernet** sobre la payload del mensaje, dejando el campo `group` en texto claro.
+ 
+### a) Cifrado en el cliente
+ 
+Se utilizó la librería `cryptography` de Python. Una clave fija generada con `Fernet.generate_key()` se hardcodea en el cliente. Antes de serializar el mensaje, la payload se cifra:
+ 
+```python
+from cryptography.fernet import Fernet
+ 
+KEY = b"<clave_generada>"
+fernet = Fernet(KEY)
+ 
+encrypted_payload = fernet.encrypt(payload.encode("utf-8")).decode("utf-8")
+ 
+message = {
+    "group": GROUP,
+    "payload": encrypted_payload
+}
+```
+ 
+### b) Verificación
+ 
+El servidor recibe la payload completamente cifrada e ilegible. En la captura se observa que el campo `group` llega en claro (`EthernautasV2`) mientras que la payload es texto cifrado en base64:
+ 
+![Cliente cifrando y servidor recibiendo payload cifrada](assets/fernet.png)
+ 
+### c) Características de Fernet
+ 
+- **Tipo:** Cifrado simétrico — la misma clave cifra y descifra.
+- **Algoritmo subyacente:** AES-128 en modo CBC para el cifrado, con HMAC-SHA256 para verificar integridad.
+- **Formato de salida:** Base64 URL-safe, lo que lo hace directamente embebible en un JSON.
+- **Propiedad destacada:** Cada cifrado del mismo texto produce un resultado diferente (usa un IV aleatorio), por lo que no es posible detectar mensajes repetidos analizando el tráfico.
+- **Librería:** `cryptography` (Python) — `pip install cryptography`.
