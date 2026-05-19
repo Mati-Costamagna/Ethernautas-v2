@@ -33,3 +33,62 @@ En redes, esto es necesario porque los datos en memoria tienen referencias, punt
 - *Protocol Buffers (binario):* el mismo mensaje se codifica en ~15 bytes de datos compactos con campos identificados por número, ilegibles directamente pero mucho más eficientes en ancho de banda.
 
 **En el contexto del TP:** se usa JSON, serialización **no binaria**. Esto facilita verificar los mensajes directamente en Wireshark o PacketSender sin herramientas adicionales, a costa de un mayor tamaño de paquete.
+
+---
+
+## Consigna 2
+
+Se desplegó un servidor TCP multi-hilo implementado en Python (`server.py`). El servidor escucha en `0.0.0.0:5000` y atiende cada cliente en un hilo independiente, permitiendo conexiones simultáneas.
+
+### a) Envío de mensajes con PacketSender
+
+Los mensajes se serializaron en JSON con la morfología requerida:
+
+```json
+{
+    "group": "Ethernautas_v2",
+    "payload": "<mensaje/carga_útil>"
+}
+```
+
+Se utilizó **PacketSender** en modo TCP persistente (opción *Persistent TCP*) para mantener la conexión abierta entre envíos y verificar que los mensajes llegaban correctamente al servidor.
+
+![PacketSender conectado al servidor](assets/packetsender_connected.png)
+
+El servidor validó el formato del mensaje y lo mostró por consola con el nombre del grupo remitente. En caso de recibir un mensaje con formato incorrecto o que no pudiera deserializarse como JSON, el servidor respondía con un aviso de mensaje mal formado.
+
+---
+
+## Consigna 3
+
+Se implementó una aplicación de cliente en Python (`client.py`) que permite enviar mensajes al servidor desde la consola de forma interactiva.
+
+### a) Configuración de IP y puerto
+
+Al ejecutarse, el cliente solicita al usuario la IP y el puerto del servidor, establece una conexión TCP y mantiene la sesión abierta mientras el usuario envíe mensajes:
+
+```
+IP del servidor: 127.0.0.1
+Puerto del servidor: 5000
+Conectado a 127.0.0.1:5000. Escribí tu mensaje (o 'exit' para salir).
+```
+
+### b) Serialización de mensajes
+
+Antes de enviar cada mensaje, el cliente lo empaqueta en el formato JSON que el servidor admite, codificándolo en UTF-8:
+
+```python
+message = {"group": GROUP, "payload": payload}
+client.sendall(json.dumps(message).encode("utf-8"))
+```
+
+El campo `group` se fija en `"Ethernautas_v2"` y `payload` contiene el texto ingresado por el usuario.
+
+### c) Verificación del funcionamiento
+
+Se ejecutaron servidor y cliente en paralelo en la misma máquina (`127.0.0.1:5000`). El servidor recibió y mostró correctamente cada mensaje enviado desde el cliente:
+
+![Servidor y cliente en funcionamiento](assets/client_server_demo.png)
+
+---
+
