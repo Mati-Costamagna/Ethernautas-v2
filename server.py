@@ -1,10 +1,14 @@
 import socket
 import threading
 import json
+from cryptography.fernet import Fernet
 
 HOST = "0.0.0.0"
 PORT = 5000
 BUFFER_SIZE = 1024
+
+KEY = b'l8U8GsZHvMg02wKlbGHf8EmkwfNs2GYvGgMTrOQSq2U='
+fernet = Fernet(KEY)
 
 
 def handle_client(client_socket, client_address):
@@ -29,7 +33,13 @@ def handle_client(client_socket, client_address):
                     and isinstance(message["group"], str)
                     and isinstance(message["payload"], str)
                 ):
-                    print(f"{message['group']}: {message['payload']}")
+                    encrypted = message["payload"]
+                    try:
+                        decrypted = fernet.decrypt(encrypted.encode("utf-8")).decode("utf-8")
+                        print(f"{message['group']} (cifrado): {encrypted}")
+                        print(f"{message['group']} (claro):   {decrypted}")
+                    except Exception:
+                        print(f"{message['group']}: {encrypted}")
                 else:
                     print(f"{ip_address} wants to send an ill formatted message.")
 

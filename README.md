@@ -57,6 +57,20 @@ Se utilizó **PacketSender** en modo TCP persistente (opción *Persistent TCP*) 
 
 El servidor validó el formato del mensaje y lo mostró por consola con el nombre del grupo remitente. En caso de recibir un mensaje con formato incorrecto o que no pudiera deserializarse como JSON, el servidor respondía con un aviso de mensaje mal formado.
 
+### Cómo ejecutar el servidor
+
+**Requisitos**
+
+```bash
+pip install cryptography
+```
+
+Iniciar el servidor (queda escuchando en `0.0.0.0:5000`, detener con `Ctrl+C`):
+
+```bash
+python server.py
+```
+
 ---
 
 ## Consigna 3
@@ -87,6 +101,17 @@ El campo `group` se fija en `"Ethernautas_v2"` y `payload` contiene el texto ing
 ### c) Verificación del funcionamiento
 
 Se ejecutaron servidor y cliente en paralelo en la misma máquina (`127.0.0.1:5000`). El servidor recibió y mostró correctamente cada mensaje enviado desde el cliente:
+
+```bash
+python client.py
+```
+
+```
+IP del servidor: 127.0.0.1
+Puerto del servidor: 5000
+Conectado a 127.0.0.1:5000. Escribí tu mensaje (o 'exit' para salir).
+> hola
+```
 
 ![Servidor y cliente en funcionamiento](assets/client_server_demo.png)
 
@@ -138,3 +163,38 @@ El servidor recibe la payload completamente cifrada e ilegible. En la captura se
   El resultado del cifrado son bytes binarios. Para poder embeber ese resultado directamente en un JSON (que es texto), Fernet lo codifica en **Base64 URL-safe**: una representación textual de datos binarios que usa solo caracteres ASCII seguros para URLs (`A-Z`, `a-z`, `0-9`, `-`, `_`). Esto explica el aspecto del ciphertext que se observa en la captura.
 
 - **Librería:** `cryptography` (Python) — `pip install cryptography`.
+
+---
+
+## Consigna 5
+
+Se modificó el servidor (`server.py`) para que descifre la payload recibida usando la misma clave Fernet compartida con el cliente. El servidor ahora imprime tanto el texto cifrado (lo que viaja por la red) como el texto descifrado (el mensaje original).
+
+```python
+from cryptography.fernet import Fernet
+
+KEY = b'l8U8GsZHvMg02wKlbGHf8EmkwfNs2GYvGgMTrOQSq2U='
+fernet = Fernet(KEY)
+
+# En handle_client:
+encrypted = message["payload"]
+decrypted = fernet.decrypt(encrypted.encode("utf-8")).decode("utf-8")
+print(f"{message['group']} (cifrado): {encrypted}")
+print(f"{message['group']} (claro):   {decrypted}")
+```
+
+### Captura de paquetes con Wireshark
+
+Se capturó el tráfico en la interfaz loopback (`lo`) filtrando por `tcp.port == 5000`, con servidor y cliente corriendo en la misma máquina (`127.0.0.1:5000`).
+
+![Captura Wireshark mostrando payload cifrada y servidor descifrando](assets/wireshark_captura.png)
+
+En la captura se pueden observar simultáneamente tres elementos:
+
+1. **Wireshark:** los paquetes TCP capturados contienen la payload Fernet en texto cifrado (cadena Base64 URL-safe comenzando con `gAAAAA...`). Un atacante que intercepte el tráfico en este punto solo vería ese ciphertext ilegible, sin poder recuperar el mensaje original sin la clave.
+
+2. **Terminal del servidor (inferior izquierda):** el servidor recibe el paquete, extrae la payload cifrada, la descifra con Fernet y muestra ambas versiones: `(cifrado)` con el ciphertext tal como llegó, y `(claro)` con el texto original del mensaje. Esto confirma que el descifrado es exitoso en el extremo receptor.
+
+3. **Terminal del cliente (derecha):** el cliente solicitó IP y puerto, envió el mensaje cifrado y mostró por consola la payload original junto con su versión cifrada antes del envío.
+
+Esto demuestra el funcionamiento end-to-end del sistema: **los datos viajan cifrados sobre la red y solo el servidor, al poseer la clave compartida, puede recuperar el contenido original.**
