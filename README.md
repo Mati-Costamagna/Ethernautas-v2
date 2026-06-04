@@ -1,9 +1,21 @@
-# Ethernautas-v2
+# TP N5
 
-### Desarrollo de los TTPP del curso de Redes de Computadoras.
----
 ### Integrantes
-## - Costamagna, Matias Javier
-## - de la Mata, Nicolas
-## - Quispe, Mateo
-## - Sabena, Maria Pilar
+- Costamagna, Matias Javier
+- de la Mata, Nicolas
+- Quispe, Mateo
+- Sabena, Maria 
+---
+## Reconocimiento de arquitectura
+- Firewall: 
+- Load Balancer
+- Queue
+- Compute
+- Serverless Function
+- SQL DB
+- NoSQL
+- Cache
+- CDN
+- Storage
+- Search Engine
+- Réplica
