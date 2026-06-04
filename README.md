@@ -71,9 +71,18 @@ Al incrementar el rate la queue mantiene la misma taza de salida sin importar el
 Sigue entregando los paquetes almacenados.
 
 **Capturas:**
-- `![Esquema queue](capturas/03-queue-esquema.png)`
-- `![Rate alto](capturas/03-queue-rate-alto.png)`
-- `![Drenado de la cola](capturas/03-queue-drenado.png)`
+
+- Esquema base
+
+![Esquema queue](assets/03-queue-esquema.png)
+
+- Rate alto
+
+![Rate alto](assets/03-queue-rate-alto.png)
+
+- Drenado de la queue
+
+![Drenado de la cola](assets/03-queue-drenado.png)
 
 **Conclusión sobre el rol de la cola (desacople productor/consumidor, absorción de picos):**
 
