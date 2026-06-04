@@ -35,8 +35,6 @@ Para cada componente respondemos brevemente:
 | **Search Engine** | | | |
 | **Réplica** | | | |
 
-> _Guía de las capas TCP/IP: Aplicación · Transporte · Internet · Acceso a la red (enlace)._
-
 ---
 
 ## 2) Tipos de tráfico
@@ -56,8 +54,6 @@ El simulador trabaja con: **STATIC, READ, WRITE, UPLOAD, SEARCH, MALICIOUS**.
 
 ## 3) Testeamos queues
 
-**Esquema (modo Sandbox):** Firewall → Queue → Compute.
-
 Distribución de tráfico inicial usada:
 
 | STATIC | READ | WRITE | UPLOAD | SEARCH | ATTACK |
@@ -67,10 +63,8 @@ Distribución de tráfico inicial usada:
 **Observaciones:**
 
 - **Al incrementar el rate, ¿qué sucede después de la queue?**
-  > _(Completar: cómo se comporta el buffer/cola al subir el throughput, si se llena, si se generan retardos, etc.)_
 
 - **Manteniendo el rate alto y luego bajándolo a cero rápidamente, ¿qué sucede después de la queue?**
-  > _(Completar: la cola sigue drenando lo acumulado; el Compute sigue procesando aunque ya no entre tráfico nuevo, etc.)_
 
 **Capturas:**
 - `![Esquema queue](capturas/03-queue-esquema.png)`
@@ -78,7 +72,6 @@ Distribución de tráfico inicial usada:
 - `![Drenado de la cola](capturas/03-queue-drenado.png)`
 
 **Conclusión sobre el rol de la cola (desacople productor/consumidor, absorción de picos):**
-> _(Completar)_
 
 ---
 
@@ -98,13 +91,10 @@ La arquitectura debe intentar resolver: tráfico estático y uploads · lecturas
 **Preguntas:**
 
 - **¿Qué componente falló primero?**
-  > _(Completar)_
 
 - **¿Por qué creés que falló?**
-  > _(Completar)_
 
 - **¿Fue un problema de capacidad, diseño, costo o seguridad?**
-  > _(Completar)_
 
 ---
 
@@ -122,10 +112,8 @@ Modificamos la arquitectura del punto 4 para soportar mayor tráfico. Probamos a
 - **Resultado observado (evidencia del simulador):** _(Completar)_
 - **Captura:** `![Estrategia 2](capturas/05-estrategia-2.png)`
 
-**Pregunta de cierre:**
 
 - **¿Escalar horizontalmente siempre mejora el sistema? Justificá usando evidencia del simulador.**
-  > _(Completar: discutir costo de upkeep vs. mejora, cuellos de botella que se trasladan a otro componente, límite del balanceo, etc.)_
 
 ---
 
@@ -151,20 +139,14 @@ Diseñamos una arquitectura inicial sólida y tratamos de sobrevivir lo más pos
 **Explicación:**
 
 - **¿Por qué elegiste cada componente?**
-  > _(Completar)_
 
 - **¿Qué tráfico atiende cada uno?**
-  > _(Completar)_
 
 - **¿Qué cuello de botella apareció primero?**
-  > _(Completar)_
 
 - **¿Qué componente escalarías si tuvieras más presupuesto?**
-  > _(Completar)_
-
-> _Referencia: con más de 300 mil puntos se considera "ganada" la condición de estabilidad (ganar más dinero que el costo de expandir). Récord de los profes: 1.001.537 puntos._
 
 ---
 
 ## Conclusiones generales
-> _(Completar: relación entre los componentes cloud y los conceptos de redes vistos en la materia, principales aprendizajes sobre cuellos de botella, escalabilidad y trade-offs costo/capacidad/seguridad.)_
+
