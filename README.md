@@ -64,7 +64,11 @@ Distribución de tráfico inicial usada:
 
 - **Al incrementar el rate, ¿qué sucede después de la queue?**
 
+Al incrementar el rate la queue mantiene la misma taza de salida sin importar el traffic rate de ingreso.
+
 - **Manteniendo el rate alto y luego bajándolo a cero rápidamente, ¿qué sucede después de la queue?**
+
+Sigue entregando los paquetes almacenados.
 
 **Capturas:**
 - `![Esquema queue](capturas/03-queue-esquema.png)`
@@ -72,6 +76,8 @@ Distribución de tráfico inicial usada:
 - `![Drenado de la cola](capturas/03-queue-drenado.png)`
 
 **Conclusión sobre el rol de la cola (desacople productor/consumidor, absorción de picos):**
+
+La cola sirve para poder manejar el proceso de paquetes segun la velocidad con la que nuestro servicio puede procesarlos, permitiendonos seguir respondiendo con un trafico alto sin perjudicar nuestro servicio.
 
 ---
 
