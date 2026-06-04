@@ -96,20 +96,31 @@ La arquitectura debe intentar resolver: tráfico estático y uploads · lecturas
 
 **Documentación con capturas:**
 
-| Ítem | Captura | Notas |
-|---|---|---|
-| a) Arquitectura inicial | `![Arquitectura inicial](capturas/04-arquitectura.png)` | |
-| b) Presupuesto inicial | `![Presupuesto](capturas/04-presupuesto.png)` | $___ |
-| c) Estado de salud de los servicios | `![Salud](capturas/04-salud.png)` | |
-| d) Momento en que empieza a fallar | `![Falla](capturas/04-falla.png)` | a los ___ min / ___ req/s |
+- a) Arquitectura inicial, b) presupuesto inicial y c) estado de salud de los servicios (todos al 100%)
+
+![Arquitectura y salud inicial](assets/4_1.png)
+
+La arquitectura inicial encadena: **Firewall → Compute → SQL DB / Storage**, sirviendo el tráfico estático y uploads contra el Storage, las lecturas/escrituras/búsquedas contra la SQL DB, y filtrando el tráfico malicioso en el Firewall. Al arrancar, todos los servicios están al **100% de salud**.
+
+- d) Momento en que la arquitectura empieza a fallar
+
+![Deterioro del Compute](assets/4_2.png)
+
+Al subir el rate y aumentar la proporción de tráfico dinámico, el **Compute** se degrada hasta el **59%** mientras el resto de los servicios (SQL DB, Storage, Firewall) se mantienen al **100%**. El propio simulador sugiere agregar una *Memory Cache* para descargar la base.
 
 **Preguntas:**
 
 - **¿Qué componente falló primero?**
 
+El **Compute**. Fue el único cuya salud cayó (hasta 59%), mientras SQL DB, Storage y Firewall seguían al 100%.
+
 - **¿Por qué creés que falló?**
 
+Porque es el nodo de **menor capacidad y mayor tiempo de procesamiento** de la arquitectura (capacidad 4 y ~600 ms por request en tier 1, es decir un throughput de apenas ~6-7 req/s) y, además, **todo el tráfico dinámico pasa por él** (READ, WRITE, SEARCH y UPLOAD) antes de llegar a su destino. Al subir el rate, su cola se llena más rápido de lo que puede procesar y se satura primero. Los demás componentes están aguas abajo y con mucha más holgura (SQL DB ~26 req/s, Storage ~125 req/s), por eso no se ven afectados.
+
 - **¿Fue un problema de capacidad, diseño, costo o seguridad?**
+
+Principalmente de **capacidad** y de **diseño**: un único Compute, sin balanceador ni caché, se vuelve el cuello de botella y un punto único de fallo. No fue un problema de seguridad (el Firewall bloqueó el tráfico malicioso) ni de costo (sobraba presupuesto). Se resuelve escalando el Compute (más nodos + Load Balancer) y agregando una caché para quitarle carga, como se ve en el punto 5.
 
 ---
 
