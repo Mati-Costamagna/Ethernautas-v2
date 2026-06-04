@@ -44,11 +44,11 @@ El simulador trabaja con: **STATIC, READ, WRITE, UPLOAD, SEARCH, MALICIOUS**.
 | Tipo de tráfico | Ejemplo real | Componente recomendado | Riesgo si se procesa incorrectamente |
 |---|---|---|---|
 | **STATIC** | Imágenes, CSS o JS de una página web | CDN / almacenamiento estático | Desperdiciar capacidad de cómputo si lo sirve un servidor de aplicación |
-| **READ** | | | |
-| **WRITE** | | | |
-| **UPLOAD** | | | |
-| **SEARCH** | | | |
-| **MALICIOUS** | | | |
+| **READ** | `GET` que consulta datos de usuario o llamadas a una API (ej.: ver un perfil o un listado de productos) | Base de datos SQL, con **caché** y **réplicas de lectura** para descargar al master | Saturar la DB master con lecturas repetidas que podrían resolverse desde caché; sube la latencia y se cae el servicio bajo carga |
+| **WRITE** | `POST`/`PUT` que crea o actualiza registros (ej.: publicar un comentario, editar un perfil) | Base de datos SQL (o NoSQL para alto volumen) | Pérdida o inconsistencia de datos; las escrituras no se pueden cachear ni replicar libremente, así que se convierten en cuello de botella si se mezclan con las lecturas |
+| **UPLOAD** | `POST` con archivo: subida de imágenes, videos o documentos | Almacenamiento de objetos (Storage / S3) | Si lo procesa el cómputo o se guarda en la DB se llenan memoria y disco rápido; archivos grandes bloquean el servidor de aplicación |
+| **SEARCH** | `GET` con query: búsqueda full-text o filtros (ej.: buscador del sitio) | **Search Engine** dedicado (3× más rápido que SQL); NoSQL **no** lo resuelve | Si lo atiende la SQL DB, cada búsqueda es muy costosa (escaneos), satura la base y degrada también las READ/WRITE |
+| **MALICIOUS** | DDoS, inyección SQL, bots de scraping | **Firewall / WAF** que lo bloquea en el borde | Si pasa al backend: caída de reputación, brechas de seguridad y consumo de recursos que debían atender tráfico legítimo |
 
 ---
 
