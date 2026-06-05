@@ -112,11 +112,11 @@ Al subir el rate y aumentar la proporción de tráfico dinámico, el **Compute**
 
 - **¿Qué componente falló primero?**
 
-El **Compute**. Fue el único cuya salud cayó (hasta 59%), mientras SQL DB, Storage y Firewall seguían al 100%.
+El **Compute**. Fue el único que cayó (hasta 59%), mientras SQL DB, Storage y Firewall seguían al 100%.
 
 - **¿Por qué creés que falló?**
 
-Porque es el nodo de **menor capacidad y mayor tiempo de procesamiento** de la arquitectura (capacidad 4 y ~600 ms por request en tier 1, es decir un throughput de apenas ~6-7 req/s) y, además, **todo el tráfico dinámico pasa por él** (READ, WRITE, SEARCH y UPLOAD) antes de llegar a su destino. Al subir el rate, su cola se llena más rápido de lo que puede procesar y se satura primero. Los demás componentes están aguas abajo y con mucha más holgura (SQL DB ~26 req/s, Storage ~125 req/s), por eso no se ven afectados.
+Porque es el nodo donde **pasa todo el tráfico dinámico** (READ, WRITE, SEARCH y UPLOAD) antes de llegar a su destino. Al subir el rate, su cola se llena más rápido de lo que puede procesar y se satura primero. 
 
 - **¿Fue un problema de capacidad, diseño, costo o seguridad?**
 
@@ -135,12 +135,12 @@ Punto de partida (arquitectura del punto 4 al momento del fallo, con el Compute 
 ### Estrategia 1: Escalado horizontal del Compute con Load Balancer
 - **Cambio aplicado:** agregamos un **Load Balancer** delante del Compute y sumamos **instancias de Compute** adicionales, para repartir el tráfico dinámico entre varios nodos en lugar de uno solo.
 - **Resultado observado (evidencia del simulador):** el cuello de botella del Compute se alivia; la salud deja de caer al 59% y el sistema soporta un rate más alto antes de degradarse. _(Completar req/s soportados, % de salud y presupuesto del simulador.)_
-- **Captura:** `![Estrategia 1](assets/05-estrategia-1.png)`
+- **Captura:** ![Estrategia 1](assets/05-estrategia-1.png)`
 
 ### Estrategia 2: Caché para descargar la base de datos
 - **Cambio aplicado:** agregamos una **Memory Cache** (sugerida por el propio simulador) delante de la SQL DB para resolver las lecturas (READ) repetidas desde memoria y reducir la carga sobre la base.
 - **Resultado observado (evidencia del simulador):** baja la carga sobre la SQL DB y el Compute, mejora la latencia y se sostiene mejor el tráfico de lecturas. _(Completar req/s soportados, % de salud y presupuesto del simulador.)_
-- **Captura:** `![Estrategia 2](assets/05-estrategia-2.png)`
+- **Captura:** ![Estrategia 2](assets/05-estrategia-2.png)`
 
 
 - **¿Escalar horizontalmente siempre mejora el sistema? Justificá usando evidencia del simulador.**
@@ -153,30 +153,34 @@ No siempre. Escalar horizontalmente el componente que es **cuello de botella** (
 
 Diseñamos una arquitectura inicial sólida y tratamos de sobrevivir lo más posible mejorándola en modo **survival**.
 
-**Arquitectura final (al momento del fallo):**
-`![Arquitectura final](capturas/06-arquitectura-final.png)`
+**Arquitectura final:**
+
+![Arquitectura final](assets/r_final.png)
+
+![Puntaje final](assets/score.png)
 
 **Estadísticas finales:**
 
 | Métrica | Valor |
 |---|---|
-| BUDGET final | $ |
-| Upkeep Cost | -$ /s |
-| Elapsed Time | min |
-| Reputation | % |
-| Load (RPS) | req/s |
-| Failures (total) | |
-| **TOTAL SCORE** | |
+| Elapsed Time | 10 min 20 s |
+| Reputation | 0 % (agotada → causa del fallo) |
+| Failures (total) | ≥ 302 (STATIC) |
+| **TOTAL SCORE** | **118.282** |
 
 **Explicación:**
 
 - **¿Por qué elegiste cada componente?**
+  Partimos de un **Firewall** en el borde para filtrar el tráfico MALICIOUS antes de que consuma recursos, seguido de un **Load Balancer** que reparte la carga entre los nodos de cómputo para evitar que uno solo se sature. Detrás ubicamos **Compute** para procesar READ/WRITE/SEARCH, **Storage/CDN** para servir el contenido STATIC y los UPLOAD, y una **SQL DB** más una **Cache** para acelerar las lecturas frecuentes. La idea fue cubrir cada tipo de tráfico con el componente que mejor lo absorbe.
 
 - **¿Qué tráfico atiende cada uno?**
+    **Firewall** → MALICIOUS (lo descarta). **CDN / Storage** → STATIC y UPLOAD. **Load Balancer + Compute** → READ, WRITE y SEARCH. **SQL DB + Cache** → persistencia y lecturas de datos. **Search Engine** → consultas SEARCH.
 
 - **¿Qué cuello de botella apareció primero?**
+  El de **tráfico STATIC**: **302 requests STATIC fallaron por falta de capacidad o de rutas**, lo que fue drenando la reputación hasta agotarla (causa final del fallo). El componente que sirve contenido estático (Storage/CDN) no dio abasto ante los picos.
 
 - **¿Qué componente escalarías si tuvieras más presupuesto?**
+  Sumaríamos **más nodos de Storage (S3) para STATIC/UPLOAD** y agregaríamos una **Queue** para amortiguar los picos de tráfico. Así atacaríamos directamente el cuello de botella que provocó el fallo.
 
 ---
 
