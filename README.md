@@ -134,18 +134,18 @@ Punto de partida (arquitectura del punto 4 al momento del fallo, con el Compute 
 
 ### Estrategia 1: Escalado horizontal del Compute con Load Balancer
 - **Cambio aplicado:** agregamos un **Load Balancer** delante del Compute y sumamos **instancias de Compute** adicionales, para repartir el tráfico dinámico entre varios nodos en lugar de uno solo.
-- **Resultado observado (evidencia del simulador):** el cuello de botella del Compute se alivia; la salud deja de caer al 59% y el sistema soporta un rate más alto antes de degradarse. _(Completar req/s soportados, % de salud y presupuesto del simulador.)_
+- **Resultado observado (evidencia del simulador):** el cuello de botella del Compute se alivia; la salud deja de caer al 59% y el sistema soporta un rate más alto antes de degradarse.
 - **Captura:** ![Estrategia 1](assets/05-estrategia-1.png)`
 
 ### Estrategia 2: Caché para descargar la base de datos
 - **Cambio aplicado:** agregamos una **Memory Cache** (sugerida por el propio simulador) delante de la SQL DB para resolver las lecturas (READ) repetidas desde memoria y reducir la carga sobre la base.
-- **Resultado observado (evidencia del simulador):** baja la carga sobre la SQL DB y el Compute, mejora la latencia y se sostiene mejor el tráfico de lecturas. _(Completar req/s soportados, % de salud y presupuesto del simulador.)_
+- **Resultado observado (evidencia del simulador):** baja la carga sobre la SQL DB y el Compute, mejora la latencia y se sostiene mejor el tráfico de lecturas.
 - **Captura:** ![Estrategia 2](assets/05-estrategia-2.png)`
 
 
 - **¿Escalar horizontalmente siempre mejora el sistema? Justificá usando evidencia del simulador.**
 
-No siempre. Escalar horizontalmente el componente que es **cuello de botella** (en nuestro caso el Compute) sí mejora el sistema, porque reparte la carga y sube el throughput. Pero agregar nodos a un componente que **no** es el cuello de botella no aporta nada: solo gasta presupuesto y sube el *upkeep* sin mejorar la salud. Además, si se escala el Compute pero la SQL DB queda sin réplicas ni caché, el cuello de botella simplemente **se mueve** aguas abajo a la base de datos. Lo eficiente es identificar primero el componente saturado (el de menor capacidad/mayor carga) y escalar/descargar ese, combinando escalado horizontal con caché y réplicas según el tipo de tráfico.
+No siempre. Escalar horizontalmente el componente que es **cuello de botella** (en nuestro caso el Compute) sí mejora el sistema, porque reparte la carga. Pero agregar nodos a un componente que **no** es el cuello de botella no aporta nada: solo gasta presupuesto sin mejorar la salud. Lo eficiente es identificar primero el componente saturado y escalar/descargar ese, combinando escalado horizontal con caché y réplicas según el tipo de tráfico.
 
 ---
 
