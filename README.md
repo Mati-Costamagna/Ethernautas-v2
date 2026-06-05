@@ -72,10 +72,6 @@ Sigue entregando los paquetes almacenados.
 
 **Capturas:**
 
-- Esquema base
-
-![Esquema queue](assets/03-queue-esquema.png)
-
 - Rate alto
 
 ![Rate alto](assets/03-queue-rate-alto.png)
