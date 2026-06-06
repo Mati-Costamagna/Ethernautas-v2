@@ -186,3 +186,6 @@ Diseñamos una arquitectura inicial sólida y tratamos de sobrevivir lo más pos
 
 ## Conclusiones generales
 
+Con este trabajo pudimos ver en la práctica cómo cada componente de una arquitectura cloud cumple un rol específico y cómo, si falta alguno o está mal dimensionado, todo el sistema se degrada. El simulador nos mostró que no alcanza con agregar nodos sin criterio: primero hay que identificar el cuello de botella y recién ahí decidir si conviene escalar horizontalmente (más instancias) o verticalmente (más capacidad por nodo). En nuestro caso, el escalado horizontal del Compute con un Load Balancer fue lo que más impacto tuvo, pero sin una caché que descargue las lecturas repetidas el problema solo se traslada a la base de datos. Lo ideal es un balance entre ambos enfoques según el tipo de tráfico y el componente saturado.
+
+También nos quedó claro que el diseño importa tanto como la capacidad. Un único Compute sin balanceador se satura rápido, y no dimensionar bien el CDN para tráfico estático fue lo que nos terminó costando la reputación en el modo survival. Armar una buena arquitectura es encontrar el equilibrio entre presupuesto, tipo de tráfico y saber priorizar qué escalar primero.
